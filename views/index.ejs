@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FUS - FreeUrlShortner</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Free Url Shortner</h2>
+      <!-- Explanation of the functionality -->
+      <p>Generate short urls for free</p>
+    </div>
+    <!-- Form for submitting a new URL -->
+    <form action="/fus" method="POST">
+      <input required type="url" name="fullUrl" placeholder="Paste Your Url">
+      <button type="submit" class="btn btn-primary ">Short</button>
+    </form>
+    <div style="margin-top: 20px">
+      <button type="button" class="btn btn-danger mb-4">Delete All Generated Links</button>
+      <ul class="list-group">
+        <!-- Loop through each URL and display it -->
+        <% urlsData.forEach((url, index)=> { %>
+        <li class="list-group-item">
+          <!-- Display the shortened URL -->
+          <a href="<%= url.ssid %>">http://localhost:3000/<%= url.ssid %></a>
+          <!-- Button to copy the URL -->
+          <button class="btn copy" id="copy<%= index %>">Copy</button>
+        </li>
+        <% }); %>
+      </ul>
+    </div>
+  </div>
+
+  <!-- JavaScript libraries -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5/2+PBpl/G3UiG4JsXQvq0C4+C3cus8+2EPBm8gQ" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Select all copy buttons
+      const copyButtons = document.querySelectorAll('.copy');
+      copyButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+          // Extract the index from button id
+          const index = button.id.substring(4);
+          // Get the text to copy (the inner text of the corresponding anchor element)
+          const textToCopy = document.querySelectorAll('a')[index].innerText;
+
+          // Create a temporary input element
+          const tempInput = document.createElement('textarea');
+          tempInput.value = textToCopy;
+          document.body.appendChild(tempInput);
+
+          // Select and copy the text
+          tempInput.select();
+          tempInput.setSelectionRange(0, 99999); // For mobile devices
+
+          // Copy the text
+          document.execCommand('copy');
+          document.body.removeChild(tempInput);
+
+          // Provide feedback to the user
+          alert('URL copied to clipboard!');
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
