@@ -4,7 +4,7 @@ const port = process.env.PORT || 3000;
 const path = require("path");
 const mongoose = require("mongoose");
 const ShortUrl = require("./models/shortUrl"); // Import the ShortUrl model
-// require("dotenv").config();
+ require("dotenv").config();
 
 // Connect to MongoDB Atlas
 const uri = process.env.DB_URI;
