@@ -4,23 +4,21 @@ const port = process.env.PORT || 3000;
 const path = require("path");
 const mongoose = require("mongoose");
 const ShortUrl = require("./models/shortUrl"); // Import the ShortUrl model
- require("dotenv").config();
+require("dotenv").config();
 
 // Connect to MongoDB Atlas
 const uri = process.env.DB_URI;
-mongoose.connect(uri);
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB Atlas'))
+  .catch(error => {
+    console.error('Error connecting to MongoDB Atlas:', error);
+    process.exit(1); // Exit the process if unable to connect to the database
+  });
 
 const db = mongoose.connection;
 
 // Event listeners for MongoDB connection
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB Atlas');
-});
-
-db.on('disconnected', () => {
-  console.log('Disconnected from MongoDB Atlas');
-});
 
 // Middleware
 app.use(express.urlencoded({ extended: false })); // Parse URL-encoded bodies
@@ -44,6 +42,10 @@ app.get('/', async (req, res) => {
 // Route for creating a new short URL
 app.post('/fus', async (req, res) => {
   try {
+    if (!req.body.fullUrl) {
+      return res.status(400).send("Bad Request: Full URL is required");
+    }
+
     await ShortUrl.create({ full: req.body.fullUrl }); // Create a new short URL document in the database
     res.redirect("/"); // Redirect back to the homepage after creating the URL
 
@@ -68,6 +70,10 @@ app.get("/:fus", async (req, res) => {
   }
 });
 
+// Handle 404 Not Found
+app.use((req, res) => {
+  res.status(404).send("404 Not Found");
+});
 
 // Start the server
 app.listen(port, () => {
